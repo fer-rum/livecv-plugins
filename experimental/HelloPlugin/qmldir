@@ -1,0 +1,2 @@
+module ferrum.experimental.hello
+plugin HelloPlugin
