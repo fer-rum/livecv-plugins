@@ -3,7 +3,7 @@
 #include <iostream>
 
 void
-Mirror::transform(cv::Mat& in, cv::Mat& out) {
+Mirror::transform(const cv::Mat& in, cv::Mat& out) {
 
         out.create(in.rows, in.cols, in.type());
 

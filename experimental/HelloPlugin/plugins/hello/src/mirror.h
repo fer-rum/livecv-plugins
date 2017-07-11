@@ -12,7 +12,7 @@ class Mirror : public QMatFilter{
     Q_OBJECT
 
 public:
-    void transform(cv::Mat& in, cv::Mat& out) override;
+    void transform(const cv::Mat& in, cv::Mat& out) override;
 
 };
 

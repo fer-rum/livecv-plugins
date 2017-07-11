@@ -1,34 +1,39 @@
-TEMPLATE = lib
-TARGET = HelloPlugin
-QT += qml quick
-CONFIG += plugin c++11
+# --- Version Check ---
 
-TARGET = $$qtLibraryTarget($$TARGET)
-uri = ferrum.experimental.hello
+# Some linux distributions have qt version 4 already installed. Sometimes this
+# can lead to running the wrong qmake version. Notify the user:
 
-# Input
-SOURCES += \
-    helloplugin_plugin.cpp \
-    helloplugin.cpp
+!qtVersionCheck(5, 6)::error( \
+    This project requires at least Qt version 5.6. \
+    Make sure you have Qt 5.6 installed and running the correct qmake. \
+)
 
-HEADERS += \
-    helloplugin_plugin.h \
-    helloplugin.h
+# --- Project structure ---
 
-DISTFILES = qmldir
+TEMPLATE = subdirs
 
-!equals(_PRO_FILE_PWD_, $$OUT_PWD) {
-    copy_qmldir.target = $$OUT_PWD/qmldir
-    copy_qmldir.depends = $$_PRO_FILE_PWD_/qmldir
-    copy_qmldir.commands = $(COPY_FILE) \"$$replace(copy_qmldir.depends, /, $$QMAKE_DIR_SEP)\" \"$$replace(copy_qmldir.target, /, $$QMAKE_DIR_SEP)\"
-    QMAKE_EXTRA_TARGETS += copy_qmldir
-    PRE_TARGETDEPS += $$copy_qmldir.target
+SUBDIRS += plugins \
+    plugins
+
+# --- Subdir configurations ---
+plugins.subdir      = $$PWD/plugins
+
+
+!isEmpty(BUILD_DEPENDENCIES):equals($$BUILD_DEPENDENCIES, true){
+    SUBDIRS += dependencies
+
+    dependencies.subdir = $$PWD/dependencies
+    plugins.depends = dependencies
 }
 
-qmldir.files = qmldir
-unix {
-    installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
-    qmldir.path = $$installPath
-    target.path = $$installPath
-    INSTALLS += target qmldir
-}
+# --- Dependency configuration ---
+
+
+# Include the global configuration files since otherwise they would never show
+# up in your project
+OTHER_FILES += \
+    .qmake.conf \
+
+OTHER_FILES += \
+    $$LIVECV_DEV_PATH/project/*.pri
+message($$LIVECV_DEV_PATH)
